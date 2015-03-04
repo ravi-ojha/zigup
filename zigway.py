@@ -14,9 +14,10 @@ HEIGHT = 480
 """
 Colors used
 """
-NIGHTSKY = 0x20222e
-BCYANIC = 0x1eacc4
-DCYANIC = 0x0d84ae
+NIGHTSKY = (32,34,46)
+LLGRAY = (183,198,200)
+LGRAY = (162,175,175)
+GRAY = (147,162,162)
 
 """
 Setting up the screen and its size
@@ -110,17 +111,26 @@ def fallingDown(ball, ballRect, ballSpeed):
 		if ballRect.top > HEIGHT:
 			return
 		vel[1] += gravity
-		screen.fill(DCYANIC)
+		screen.fill(0xffffff)
 		roadPointsLen = len(roadPoints)
 		i = roadPointsLen - 1
 		ballRect = ballRect.move(vel)
 		screen.blit(ball, ballRect)
+		roadWidth = 3*ballRect.width
 		while i > 0:
-			pygame.draw.line(screen,BCYANIC,roadPoints[i-1],roadPoints[i],3*ballRect.width)
+			if roadPoints[i-1][0] < roadPoints[i][0]:
+				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
+				rectPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
+				pygame.draw.polygon(screen, GRAY, rectPoints, 0)
+			else:
+				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
+				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
+				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
+
 			i -= 1
 		pygame.display.flip()
 		pygame.time.delay(10)
-
 
 def playGame():
 	score = 0
@@ -197,11 +207,22 @@ def playGame():
 		"""
 		Blit things on the screen
 		"""
-		screen.fill(DCYANIC)
+		screen.fill(0xffffff)
+		#fill_gradient(screen,DCYANIC,BCYANIC)
 		i = roadPointsLen - 1
+		roadWidth = 3*ballRect.width
 		#print i
 		while i > 0:
-			pygame.draw.line(screen,BCYANIC,roadPoints[i-1],roadPoints[i],3*ballRect.width)
+			if roadPoints[i-1][0] < roadPoints[i][0]:
+				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
+				rectPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
+				pygame.draw.polygon(screen, GRAY, rectPoints, 0)
+			else:
+				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
+				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
+				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
+
 			i -= 1
 		for i in xrange(roadPointsLen):
 			roadPoints[i][1] += 1
