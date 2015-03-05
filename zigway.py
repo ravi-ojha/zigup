@@ -1,6 +1,7 @@
 import sys
 import pygame
 import random
+from pygame.locals import *
 
 """
 Determine WIDTH and HEIGHT of the screen.
@@ -76,6 +77,15 @@ def initializeRoads(ballRect, roadDirection):
 		#print roadPoints
 	return roadDirection
 
+def wait():
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                return
+
 """
 This function works only for current game
 If you change the slope of roads then this will break
@@ -141,6 +151,11 @@ def fallingDown(ball, ballRect, ballSpeed):
 		pygame.time.delay(10)
 
 def playGame():
+
+	pygame.init()
+
+	#TODO: control speed by ball speed not time delay
+	delaySpeed = 8
 	score = 0
 	"""
 	Loading our ball, the main character of the game
@@ -157,6 +172,9 @@ def playGame():
 
 	roadDirection = 1
 	roadDirection = initializeRoads(ballRect, roadDirection)
+
+	# If flag is 1, then wait for the tap or key down to start the game
+	flag = 1
 
 	# Initialize ball speed
 	#print ballRect
@@ -235,13 +253,31 @@ def playGame():
 			pygame.draw.polygon(screen, LGRAY, frontPoints, 0)
 			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
 
-
 			i -= 1
+
 		for i in xrange(roadPointsLen):
 			roadPoints[i][1] += 1
 
 		screen.blit(ball, ballRect)
+
+		if flag:
+			# initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
+			font=pygame.font.Font(None,20)
+
+			# render text
+			label = font.render("Press any key to play!", 1, DGRAY)
+			labelrect = label.get_rect()
+			labelrect.centerx = screen.get_rect().centerx
+			labelrect.centery = HEIGHT - 2*labelrect.height
+			screen.blit(label, labelrect)
+
 		pygame.display.flip()
-		pygame.time.delay(10)
+
+		if flag:
+
+			wait()
+			flag = 0
+
+		pygame.time.delay(delaySpeed)
 
 playGame()
