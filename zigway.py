@@ -18,6 +18,7 @@ NIGHTSKY = (32,34,46)
 LLGRAY = (183,198,200)
 LGRAY = (162,175,175)
 GRAY = (147,162,162)
+DGRAY = (137,150,150)
 
 """
 Setting up the screen and its size
@@ -104,6 +105,9 @@ def gameOver(ballRect, roadWidth):
 		i += 1
 	return False
 
+# TODO: Optimization
+# I should not be using dirty update() or flip()
+# Gotta blit only those things that change
 def fallingDown(ball, ballRect, ballSpeed):
 	gravity = 0.1
 	vel = ballSpeed[:]
@@ -118,6 +122,8 @@ def fallingDown(ball, ballRect, ballSpeed):
 		screen.blit(ball, ballRect)
 		roadWidth = 3*ballRect.width
 		while i > 0:
+			frontPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
+
 			if roadPoints[i-1][0] < roadPoints[i][0]:
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
@@ -126,6 +132,8 @@ def fallingDown(ball, ballRect, ballSpeed):
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
 				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+
+			pygame.draw.polygon(screen, LGRAY, frontPoints, 0)
 			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
 
 			i -= 1
@@ -213,15 +221,20 @@ def playGame():
 		roadWidth = 3*ballRect.width
 		#print i
 		while i > 0:
+			frontPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 			if roadPoints[i-1][0] < roadPoints[i][0]:
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
 				pygame.draw.polygon(screen, GRAY, rectPoints, 0)
+
 			else:
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
 				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+
+			pygame.draw.polygon(screen, LGRAY, frontPoints, 0)
 			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
+
 
 			i -= 1
 		for i in xrange(roadPointsLen):
