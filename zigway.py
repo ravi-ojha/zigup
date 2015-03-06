@@ -10,7 +10,7 @@ Detect it from the device.
 """
 WIDTH = 320
 HEIGHT = 480
-FPS = 50
+FPS = 60
 FPSCLOCK = pygame.time.Clock()
 
 """
@@ -144,6 +144,8 @@ def fallingDown(ball, ballRect, ballSpeed):
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
 				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+				# This line draws a line at the corners of the wall, don't know if it adds any good feel
+				#pygame.draw.line(screen,GRAY,[roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth])
 
 			pygame.draw.polygon(screen, LGRAY, frontPoints, 0)
 			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
@@ -193,11 +195,14 @@ def playGame():
 				# TODO: ask before they quit in a subtle manner
 				return
 			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_LEFT:
+				if event.key == pygame.K_SPACE:
+					score += 1
+					ballSpeed[0] = -ballSpeed[0]
+				elif event.key == pygame.K_LEFT:
 					if ballSpeed[0] > 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
-				if event.key == pygame.K_RIGHT:
+				elif event.key == pygame.K_RIGHT:
 					if ballSpeed[0] < 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
@@ -250,6 +255,8 @@ def playGame():
 				topPoints = [[roadPoints[i-1][0] + roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] + roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]]]
 				rectPoints = [[roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth], [roadPoints[i-1][0] - roadWidth/2, roadPoints[i-1][1] + 1.5*roadWidth]]
 				pygame.draw.polygon(screen, LGRAY, rectPoints, 0)
+				# This line draws a line at the corners of the wall, don't know if it adds any good feel
+				#pygame.draw.line(screen,GRAY,[roadPoints[i][0] - roadWidth/2, roadPoints[i][1]], [roadPoints[i][0] - roadWidth/2, roadPoints[i][1] + 1.5*roadWidth])
 
 			pygame.draw.polygon(screen, LGRAY, frontPoints, 0)
 			pygame.draw.polygon(screen, LLGRAY, topPoints, 0)
