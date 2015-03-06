@@ -43,11 +43,6 @@ segLen is like a brick
 minFactor and maxFactor act as multiplier of brick
 These help us in deciding where to place next turn in the road
 """
-segLen = 10
-segFactors = [1,1,1,1,1,2,2,2,2,2,3,3,4,5]
-roadDirection = 1
-roadPoints = []
-speedFactor = 2
 
 def addRoadSegment(currX, currY, roadDirection):
 	factor = segFactors[random.randrange(len(segFactors))]
@@ -79,13 +74,15 @@ def initializeRoads(ballRect, roadDirection):
 	return roadDirection
 
 def wait():
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                return
+	# clear event queue and then wait
+	pygame.event.clear()
+	while True:
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+				sys.exit()
+			if event.type == KEYDOWN:
+				return event.key
 
 """
 This function works only for current game
@@ -157,10 +154,12 @@ def fallingDown(ball, ballRect, ballSpeed):
 def playGame():
 
 	pygame.init()
-
+	# initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
+	font20=pygame.font.Font(None,20)
+	font15=pygame.font.Font(None,15)
 	#TODO: control speed by ball speed not time delay
-	delaySpeed = 8
 	score = 0
+
 	"""
 	Loading our ball, the main character of the game
 	And its aura, the rectangle that surrounds the ball
@@ -191,18 +190,18 @@ def playGame():
 		"""
 		events = pygame.event.get()
 		for event in events:
-			if event.type == pygame.QUIT:
+			if event.type == QUIT:
 				# TODO: ask before they quit in a subtle manner
 				return
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE:
+			if event.type == KEYDOWN:
+				if event.key == K_SPACE:
 					score += 1
 					ballSpeed[0] = -ballSpeed[0]
-				elif event.key == pygame.K_LEFT:
+				elif event.key == K_LEFT:
 					if ballSpeed[0] > 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
-				elif event.key == pygame.K_RIGHT:
+				elif event.key == K_RIGHT:
 					if ballSpeed[0] < 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
@@ -212,9 +211,25 @@ def playGame():
 		"""
 		if gameOver(ballRect, 3*ballRect.width):
 			fallingDown(ball, ballRect, ballSpeed)
-			print "Game Over!"
-			print "Your Score: %d" % (score)
-			return
+			screen.fill(0xffffff)
+			label = font20.render("Game Over! Your Score: %d" % (score), 1, DGRAY)
+			labelrect = label.get_rect()
+			labelrect.centerx = screen.get_rect().centerx
+			labelrect.centery = screen.get_rect().centery
+
+			againLabel = font20.render("Press ENTER to play again!", 1, DGRAY)
+			againLabelRect = againLabel.get_rect()
+			againLabelRect.centerx = screen.get_rect().centerx
+			againLabelRect.centery = screen.get_rect().centery + 2*labelrect.height
+
+			screen.blit(label,labelrect)
+			screen.blit(againLabel,againLabelRect)
+			pygame.display.flip()
+
+			wait()
+			while True:
+				if wait() == K_RETURN:
+					return
 
 		# Keep the ball rolling
 		ballRect = ballRect.move(ballSpeed)
@@ -269,15 +284,24 @@ def playGame():
 		screen.blit(ball, ballRect)
 
 		if flag:
-			# initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
-			font=pygame.font.Font(None,20)
 
 			# render text
-			label = font.render("Press any key to play!", 1, DGRAY)
+			label = font20.render("Press SPACEBAR to play!", 1, DGRAY)
 			labelrect = label.get_rect()
 			labelrect.centerx = screen.get_rect().centerx
-			labelrect.centery = HEIGHT - 2*labelrect.height
+			labelrect.centery = HEIGHT - 4*labelrect.height
+			againLabel = font15.render("Use Arrow Keys/Spacebar to change ball direction", 1, DGRAY)
+			againLabelRect = againLabel.get_rect()
+			againLabelRect.centerx = screen.get_rect().centerx
+			againLabelRect.centery = HEIGHT - 2*labelrect.height
 			screen.blit(label, labelrect)
+			screen.blit(againLabel,againLabelRect)
+
+		scoreText = font20.render("Score: %d" % (score), 1, DGRAY)
+		scoreTextRect = scoreText.get_rect()
+		scoreTextRect.top = scoreTextRect.height
+		scoreTextRect.left = WIDTH - scoreTextRect.width - scoreTextRect.height
+		screen.blit(scoreText, scoreTextRect)
 
 		pygame.display.flip()
 
@@ -288,4 +312,18 @@ def playGame():
 
 		FPSCLOCK.tick(FPS)
 
-playGame()
+
+def main():
+	global segLen, segFactors, roadDirection, roadPoints, speedFactor
+	segLen = 10
+	segFactors = [1,1,1,1,1,2,2,2,2,2,3,3,4,5]
+	roadDirection = 1
+	roadPoints = []
+	speedFactor = 2
+	while True:
+		roadPoints = []
+		playGame()
+
+
+if __name__ == '__main__':
+	main()
