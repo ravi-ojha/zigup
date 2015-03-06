@@ -10,7 +10,8 @@ Detect it from the device.
 """
 WIDTH = 320
 HEIGHT = 480
-
+FPS = 50
+FPSCLOCK = pygame.time.Clock()
 
 """
 Colors used
@@ -43,21 +44,21 @@ minFactor and maxFactor act as multiplier of brick
 These help us in deciding where to place next turn in the road
 """
 segLen = 10
-minFactor = 2
-maxFactor = 7
+segFactors = [1,1,1,1,1,2,2,2,2,2,3,3,4,5]
 roadDirection = 1
 roadPoints = []
+speedFactor = 2
 
 def addRoadSegment(currX, currY, roadDirection):
-	factor = random.randrange(minFactor,maxFactor)
-	if roadDirection == 1 and (currX + factor*segLen) < gameRightLimit:
-		currX += factor*segLen
+	factor = segFactors[random.randrange(len(segFactors))]
+	if roadDirection == 1 and (currX + speedFactor*factor*segLen) < gameRightLimit:
+		currX += speedFactor*factor*segLen
 		currY -= factor*segLen
-	elif (currX - factor*segLen) > gameLeftLimit:
-		currX -= factor*segLen
+	elif (currX - speedFactor*factor*segLen) > gameLeftLimit:
+		currX -= speedFactor*factor*segLen
 		currY -= factor*segLen
 	else:
-		currX += factor*segLen
+		currX += speedFactor*factor*segLen
 		currY -= factor*segLen
 	return [currX, currY]
 
@@ -67,7 +68,7 @@ def initializeRoads(ballRect, roadDirection):
 	currY = ballRect.top + ballRect.height
 	roadPoints.append([currX, currY])
 	#this condition helps in adding segments until the road fills up the screen
-	while currY >= -(segLen*maxFactor):
+	while currY >= -(HEIGHT):
 		#print "here"
 		tmp = addRoadSegment(currX, currY, roadDirection)
 		currX = tmp[0]
@@ -100,10 +101,11 @@ def gameOver(ballRect, roadWidth):
 
 			xcord = 0
 			# Find the x co-ordinate
+			# try to create a simple equation using line segment intersection geometry
 			if roadPoints[i][0] < roadPoints[i+1][0]:
-				xcord = roadPoints[i][0] + (roadPoints[i][1] - ballRect.centery)
+				xcord = roadPoints[i][0] + speedFactor*(roadPoints[i][1] - ballRect.centery)
 			else:
-				xcord = roadPoints[i][0] - (roadPoints[i][1] - ballRect.centery)
+				xcord = roadPoints[i][0] - speedFactor*(roadPoints[i][1] - ballRect.centery)
 
 			leftLimit = xcord - roadWidth/2
 			rightLimit = xcord + roadWidth/2
@@ -148,7 +150,7 @@ def fallingDown(ball, ballRect, ballSpeed):
 
 			i -= 1
 		pygame.display.flip()
-		pygame.time.delay(10)
+		FPSCLOCK.tick(FPS)
 
 def playGame():
 
@@ -178,7 +180,7 @@ def playGame():
 
 	# Initialize ball speed
 	#print ballRect
-	ballSpeed = [1,0]
+	ballSpeed = [speedFactor,0]
 	while True:
 
 		"""
@@ -217,10 +219,9 @@ def playGame():
 		When 2nd last point is in the screen and last point is out of the screen
 		We should add a new segment
 		"""
-		if roadPoints[-1][1] <= 0 and roadPoints[-2][1] >= 0:
+		if roadPoints[-1][1]+HEIGHT <= 0 and roadPoints[-2][1]+HEIGHT >= 0:
 			roadPoints.append(addRoadSegment(roadPoints[-1][0], roadPoints[-1][1], roadDirection))
 			roadDirection = 1 - roadDirection
-		#print roadDirection
 
 		"""
 		Remove points from roadPoints when they are no longer useful
@@ -278,6 +279,6 @@ def playGame():
 			wait()
 			flag = 0
 
-		pygame.time.delay(delaySpeed)
+		FPSCLOCK.tick(FPS)
 
 playGame()
