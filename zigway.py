@@ -1,7 +1,6 @@
 import sys
 import pygame
 import random
-from pygame.locals import *
 
 """
 Determine WIDTH and HEIGHT of the screen.
@@ -78,10 +77,10 @@ def wait():
 	pygame.event.clear()
 	while True:
 		for event in pygame.event.get():
-			if event.type == QUIT:
+			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
-			if event.type == KEYDOWN:
+			if event.type == pygame.KEYDOWN:
 				return event.key
 
 """
@@ -118,7 +117,7 @@ def gameOver(ballRect, roadWidth):
 # I should not be using dirty update() or flip()
 # Gotta blit only those things that change
 def fallingDown(ball, ballRect, ballSpeed):
-	gravity = 0.1
+	gravity = 0.2
 	vel = ballSpeed[:]
 	while True:
 		if ballRect.top > HEIGHT:
@@ -155,8 +154,8 @@ def playGame():
 
 	pygame.init()
 	# initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
-	font20=pygame.font.Font(None,20)
-	font15=pygame.font.Font(None,15)
+	font20=pygame.font.Font("assets/RobotoCondensed-Regular.ttf",20)
+	font15=pygame.font.Font("assets/RobotoCondensed-Regular.ttf",15)
 	#TODO: control speed by ball speed not time delay
 	score = 0
 
@@ -190,18 +189,18 @@ def playGame():
 		"""
 		events = pygame.event.get()
 		for event in events:
-			if event.type == QUIT:
+			if event.type == pygame.QUIT:
 				# TODO: ask before they quit in a subtle manner
 				return
-			if event.type == KEYDOWN:
-				if event.key == K_SPACE:
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_SPACE:
 					score += 1
 					ballSpeed[0] = -ballSpeed[0]
-				elif event.key == K_LEFT:
+				elif event.key == pygame.K_LEFT:
 					if ballSpeed[0] > 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
-				elif event.key == K_RIGHT:
+				elif event.key == pygame.K_RIGHT:
 					if ballSpeed[0] < 0:
 						score += 1
 						ballSpeed[0] = -ballSpeed[0]
@@ -228,7 +227,7 @@ def playGame():
 
 			wait()
 			while True:
-				if wait() == K_RETURN:
+				if wait() == pygame.K_RETURN:
 					return
 
 		# Keep the ball rolling
@@ -297,7 +296,7 @@ def playGame():
 			screen.blit(label, labelrect)
 			screen.blit(againLabel,againLabelRect)
 
-		scoreText = font20.render("Score: %d" % (score), 1, DGRAY)
+		scoreText = font20.render("%d" % (score), 1, DGRAY)
 		scoreTextRect = scoreText.get_rect()
 		scoreTextRect.top = scoreTextRect.height
 		scoreTextRect.left = WIDTH - scoreTextRect.width - scoreTextRect.height
