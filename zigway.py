@@ -165,6 +165,8 @@ def playGame():
 	font15=pygame.font.SysFont(font,18)
 	#TODO: control speed by ball speed not time delay
 	score = 0
+	global highScore
+
 
 	"""
 	Loading our ball, the main character of the game
@@ -224,12 +226,19 @@ def playGame():
 				labelrect.centerx = background.get_rect().centerx
 				labelrect.centery = background.get_rect().centery
 
+				highScore = max(score, highScore)
+				highScoreLabel = font20.render("High Score: %d" % (highScore), 1, DGRAY)
+				highScoreLabelRect = highScoreLabel.get_rect()
+				highScoreLabelRect.centerx = background.get_rect().centerx
+				highScoreLabelRect.centery = background.get_rect().centery + 2*labelrect.height
+
 				againLabel = font20.render("Press ENTER to play again!", 1, DGRAY)
 				againLabelRect = againLabel.get_rect()
 				againLabelRect.centerx = background.get_rect().centerx
-				againLabelRect.centery = background.get_rect().centery + 2*labelrect.height
+				againLabelRect.centery = background.get_rect().centery + 4*labelrect.height
 
 				background.blit(label,labelrect)
+				background.blit(highScoreLabel,highScoreLabelRect)
 				background.blit(againLabel,againLabelRect)
 
 				screen.blit(background, (0,0))
@@ -323,7 +332,8 @@ def playGame():
 
 
 def main():
-	global segLen, segFactors, roadDirection, roadPoints, speedFactor
+	global segLen, segFactors, roadDirection, roadPoints, speedFactor, highScore, score
+	highScore = 0
 	segLen = 10
 	segFactors = [1,1,1,1,1,2,2,2,2,2,3]
 	roadDirection = 1
