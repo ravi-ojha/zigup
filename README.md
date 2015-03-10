@@ -1,7 +1,8 @@
 # zigway
 
 A game inspired by ZigZag[1], developed using pygame.  
-I always wanted to start with game programming. Got to know about pygame and to start with I chose to create a game which resembles ZigZag (well, almost). This is only to gain experience in game-programming, I won't be publishing it for various platforms. I just hope Marius Gerlich (Copyright holder of ZigZag and Mauigo games) does not sue me for this :p.    
+I always wanted to start with game programming. Got to know about pygame and to start with, I chose to write a game which resembles ZigZag (well, almost). This is only to gain experience in game-programming, I won't be publishing it for various platforms. Hope Marius Gerlich (Copyright holder of ZigZag and Mauigo games) does not sue me for this :p.   
+
 Pre-requisites: 
   - Python 2.7
   - Pygame
